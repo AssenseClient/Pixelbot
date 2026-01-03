@@ -1,34 +1,45 @@
 /**
- * MoonDLC — Полная логика
+ * MoonDLC — Полный функционал
  */
 
-// --- 1. АНИМАЦИЯ ФОНА ---
+// --- 1. АНИМАЦИЯ ЗВЕЗДНОГО ФОНА ---
 const canvas = document.getElementById('stars-canvas');
-const ctx = canvas.getContext('2d');
-let stars = [];
-const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-window.addEventListener('resize', resize); resize();
+if (canvas) {
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+    window.addEventListener('resize', resize); resize();
 
-class Star {
-    constructor() { this.reset(); }
-    reset() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.3;
-        this.speed = Math.random() * 0.05 + 0.01;
+    class Star {
+        constructor() { this.reset(); }
+        reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 1.3;
+            this.speed = Math.random() * 0.05 + 0.01;
+        }
+        update() { this.y -= this.speed; if (this.y < 0) this.reset(); }
+        draw() {
+            ctx.fillStyle = "white"; ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+        }
     }
-    update() { this.y -= this.speed; if (this.y < 0) this.reset(); }
-    draw() { ctx.fillStyle = "white"; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+    for (let i = 0; i < 80; i++) stars.push(new Star());
+    const animate = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => { s.update(); s.draw(); });
+        requestAnimationFrame(animate);
+    };
+    animate();
 }
-for (let i = 0; i < 80; i++) stars.push(new Star());
-function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => { s.update(); s.draw(); }); requestAnimationFrame(animate); }
-animate();
 
 // --- 2. НАВИГАЦИЯ ---
 window.showSection = function(id) {
     document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
-    const t = document.getElementById(id);
-    if(t) t.style.display = (id === 'home-section' ? 'flex' : 'block');
+    const target = document.getElementById(id);
+    if (target) {
+        target.style.display = (id === 'home-section') ? 'flex' : 'block';
+    }
 };
 
 window.handleProfileNav = function() {
@@ -112,12 +123,13 @@ window.doLogin = function() {
     errLogin.style.display = 'block';
 };
 
-// --- 4. ПРОФИЛЬ И ПОДПИСКА ---
+// --- 4. ПРОФИЛЬ И АКТИВАЦИЯ ---
 function updateProfileUI() {
     const currentEmail = localStorage.getItem('currentUser');
     if (!currentEmail) return;
     
     const user = JSON.parse(localStorage.getItem('user_' + currentEmail));
+
     document.getElementById('prof-email').innerText = user.email;
     const statusLabel = document.getElementById('prof-status');
     const downloadBox = document.getElementById('download-box');
@@ -126,7 +138,7 @@ function updateProfileUI() {
         statusLabel.innerText = "Активна";
         statusLabel.className = "status-active";
         downloadBox.innerHTML = `
-            <p style="font-size: 0.85rem; margin-bottom: 15px;">Доступ активирован.</p>
+            <p style="font-size: 0.85rem; margin-bottom: 15px;">Ваша подписка активна.</p>
             <a href="https://workupload.com/start/JjRt6Xdszyg" target="_blank" class="btn-card">Скачать Лаунчер</a>`;
     } else {
         statusLabel.innerText = "Не активна";
