@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoonDLC — Лучшее решение</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #0b0b0d;
+            --card-bg: #111113;
+            --accent-blue: #b4c6ff;
+            --text-main: #ffffff;
+            --text-dim: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --error-red: #f87171;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        #stars-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        nav {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 15px 60px; backdrop-filter: blur(12px);
+            position: sticky; top: 0; z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; }
+        .logo img { width: 30px; height: 30px; border-radius: 50%; }
+
+        .nav-links { display: flex; gap: 20px; align-items: center; }
+        .nav-item { color: var(--text-dim); text-decoration: none; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer; transition: 0.3s; }
+        .nav-item:hover { color: white; }
+
+        .profile-btn-nav {
+            background: var(--accent-blue); color: #000;
+            padding: 8px 18px; border-radius: 8px; border: none;
+            cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px;
+            font-size: 0.85rem;
+        }
+
+        .btn-card {
+            background: var(--accent-blue); color: #000;
+            padding: 8px 16px; border-radius: 6px; border: none;
+            cursor: pointer; font-weight: 600; display: inline-flex;
+            align-items: center; gap: 6px; text-decoration: none;
+            font-size: 0.8rem; transition: 0.2s; margin-top: auto;
+        }
+        .btn-card:hover { opacity: 0.8; }
+
+        .home-hero {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            height: calc(100vh - 80px); text-align: center; position: relative;
+        }
+
+        .grid-bg {
+            position: absolute; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 45px 45px;
+            z-index: -1; mask-image: radial-gradient(circle, black, transparent 70%);
+        }
+
+        .home-hero h1 { font-size: 3.5rem; max-width: 800px; margin: 0; line-height: 1.1; letter-spacing: -1px; }
+        .home-hero p { color: var(--text-dim); max-width: 550px; margin: 25px 0; font-size: 0.9rem; }
+
+        .container { max-width: 1000px; margin: 50px auto; text-align: center; }
+        .products-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+        
+        .product-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 20px; width: 260px; text-align: left;
+            display: flex; flex-direction: column; min-height: 220px;
+        }
+        
+        .price { font-size: 2.2rem; font-weight: 800; margin-bottom: 5px; }
+        .product-desc { color: var(--text-dim); font-size: 0.75rem; line-height: 1.4; margin-bottom: 20px; }
+
+        .auth-card { background: var(--card-bg); border: 1px solid var(--border-color); padding: 35px; border-radius: 16px; width: 350px; margin: 0 auto; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 6px; color: var(--text-dim); font-size: 0.85rem; }
+        .input-group input { 
+            width: 100%; padding: 12px; background: rgba(255,255,255,0.02); 
+            border: 1px solid var(--border-color); border-radius: 10px; color: white; 
+            box-sizing: border-box; font-size: 1rem; outline: none;
+        }
+        .error-label { color: var(--error-red); font-size: 0.75rem; margin-top: 5px; display: none; }
+
+        .info-panel { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 16px; padding: 35px; display: none; margin-top: 20px; }
+        .info-panel.active { display: block; }
+        .tabs-nav { display: flex; justify-content: center; gap: 10px; margin-bottom: 10px; }
+        .tab-link { background: var(--card-bg); border: 1px solid var(--border-color); color: white; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-size: 0.85rem; }
+        .tab-link.active { background: var(--accent-blue); color: #000; font-weight: 600; }
+        
+        .status-active { color: #4ade80; font-weight: bold; }
+        .status-inactive { color: var(--error-red); font-weight: bold; }
+        .switch-link { color: var(--accent-blue); cursor: pointer; font-size: 0.8rem; text-decoration: underline; margin-top: 15px; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <canvas id="stars-canvas"></canvas>
+
+    <nav>
+        <div class="logo">
+            <img src="загруженное (9).jpg" alt="MoonDLC">
+            MoonDLC
+        </div>
+        <div class="nav-links">
+            <div class="nav-item" onclick="showSection('home-section')"><i class="fas fa-home"></i> Главная</div>
+            <div class="nav-item" onclick="showSection('shop-section')"><i class="fas fa-box"></i> Товары</div>
+        </div>
+        <button class="profile-btn-nav" onclick="handleProfileNav()">
+            <i class="fas fa-user"></i> Профиль
+        </button>
+    </nav>
+
+    <section id="home-section" class="home-hero content-section">
+        <div class="grid-bg"></div>
+        <h1>MoonDLC: Самый Лучший Client под Funtime</h1>
+        <p>Хорошие обходы и продвинутые модули для вашего игрового процесса.</p>
+        <button class="profile-btn-nav" style="padding: 14px 40px; font-size: 1rem;" onclick="showSection('shop-section')">Открыть Товары</button>
+    </section>
+
+    <section id="auth-section" class="container content-section" style="display: none;">
+        <div id="reg-box" class="auth-card">
+            <h2>Регистрация</h2>
+            <div class="input-group">
+                <label>Почта (@gmail.com, @yandex.ru, @mail.ru)</label>
+                <input type="email" id="reg-email" placeholder="user@gmail.com">
+                <div id="err-reg-email" class="error-label"></div>
+            </div>
+            <div class="input-group">
+                <label>Пароль</label>
+                <input type="password" id="reg-pass" placeholder="••••••••">
+            </div>
+            <div class="input-group">
+                <label>Повторите пароль</label>
+                <input type="password" id="reg-confirm" placeholder="••••••••">
+                <div id="err-reg-pass" class="error-label">Пароли не совпадают</div>
+            </div>
+            <button class="profile-btn-nav" style="width: 100%; justify-content: center;" onclick="doRegister()">Создать аккаунт</button>
+            <span class="switch-link" onclick="toggleAuth(true)">Уже есть аккаунт? Войти</span>
+        </div>
+
+        <div id="login-box" class="auth-card" style="display: none;">
+            <h2>Вход</h2>
+            <div class="input-group">
+                <label>Почта</label>
+                <input type="email" id="login-email" placeholder="user@gmail.com">
+            </div>
+            <div class="input-group">
+                <label>Пароль</label>
+                <input type="password" id="login-pass" placeholder="••••••••">
+                <div id="err-login" class="error-label">Неверные данные</div>
+            </div>
+            <button class="profile-btn-nav" style="width: 100%; justify-content: center;" onclick="doLogin()">Войти</button>
+            <span class="switch-link" onclick="toggleAuth(false)">Нет аккаунта? Регистрация</span>
+        </div>
+    </section>
+
+    <section id="shop-section" class="container content-section" style="display: none;">
+        <h2 style="margin-bottom: 30px;">Доступные версии MoonDLC</h2>
+        <div class="products-grid">
+            <div class="product-card">
+                <div>
+                    <div class="price">Free</div>
+                    <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 8px;">MoonDLC Free</div>
+                    <div class="product-desc">Обходит только FunTime. Рабочая киллаура, бесплатный MoonDLC.</div>
+                </div>
+                <a href="https://workupload.com/start/JjRt6Xdszyg" target="_blank" class="btn-card">Скачать</a>
+            </div>
+            <div class="product-card">
+                <div>
+                    <div class="price">149₽</div>
+                    <div style="font-weight: 700; font-size: 0.85rem; margin-bottom: 8px;">MoonDLC Buy</div>
+                    <div class="product-desc">Обходит FunTime, SpookyTime и HolyWorld. MoonDLC самый Дешёвый Client под Funtime.</div>
+                </div>
+                <a href="https://t.me/yxauc" target="_blank" class="btn-card">Купить</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="profile-section" class="container content-section" style="display: none;">
+        <div class="tabs-nav">
+            <button class="tab-link active" onclick="switchTab('account', this)">Аккаунт</button>
+            <button class="tab-link" onclick="switchTab('launcher', this)">Лаунчер</button>
+        </div>
+
+        <div id="account" class="info-panel active">
+            <div style="text-align: left; line-height: 2.5;">
+                <div><strong>Почта:</strong> <span id="prof-email">---</span></div>
+                <div><strong>Подписка:</strong> <span id="prof-status">---</span></div>
+            </div>
+            <button class="btn-card" style="margin-top: 20px; background: transparent; border: 1px solid var(--error-red); color: var(--error-red);" onclick="logout()">Выйти</button>
+        </div>
+
+        <div id="launcher" class="info-panel">
+            <div id="download-box"></div>
+        </div>
+    </section>
+
+    <script src="main.js"></script>
+</body>
+</html>
