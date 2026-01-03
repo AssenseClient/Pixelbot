@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MoonDLC — Лучшее решение</title>
+    <link rel="icon" type="image/png" href="moon.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -33,8 +34,22 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.1rem; }
-        .logo img { width: 30px; height: 30px; border-radius: 50%; }
+        /* Обновленный блок логотипа */
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            font-weight: 700; 
+            font-size: 1.2rem; 
+            cursor: pointer;
+        }
+        .logo img { 
+            width: 45px;          /* Увеличенный размер */
+            height: 45px; 
+            border-radius: 50%; 
+            object-fit: cover;
+            margin-left: 10px;    /* Отступ от края */
+            margin-right: -2px;   /* Отрицательный отступ, чтобы быть ближе к тексту */
+        }
 
         .nav-links { display: flex; gap: 20px; align-items: center; }
         .nav-item { color: var(--text-dim); text-decoration: none; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; cursor: pointer; transition: 0.3s; }
@@ -111,8 +126,8 @@
     <canvas id="stars-canvas"></canvas>
 
     <nav>
-        <div class="logo">
-            <img src="загруженное (9).jpg" alt="MoonDLC">
+        <div class="logo" onclick="showSection('home-section')">
+            <img src="moon.png" alt="MoonDLC">
             MoonDLC
         </div>
         <div class="nav-links">
@@ -195,7 +210,6 @@
             <button class="tab-link active" onclick="switchTab('account', this)">Аккаунт</button>
             <button class="tab-link" onclick="switchTab('launcher', this)">Лаунчер</button>
         </div>
-
         <div id="account" class="info-panel active">
             <div style="text-align: left; line-height: 2.5;">
                 <div><strong>Почта:</strong> <span id="prof-email">---</span></div>
@@ -203,7 +217,6 @@
             </div>
             <button class="btn-card" style="margin-top: 20px; background: transparent; border: 1px solid var(--error-red); color: var(--error-red);" onclick="logout()">Выйти</button>
         </div>
-
         <div id="launcher" class="info-panel">
             <div id="download-box"></div>
         </div>
